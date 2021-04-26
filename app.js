@@ -32,6 +32,8 @@ mongoose.connection.on("open", function() {
   console.log("Database connection established...");
 });
 
+// test
+
 /** SETTING UP LOWDB */
 const adapter = new FileSync("data/db.json");
 const db = low(adapter);
