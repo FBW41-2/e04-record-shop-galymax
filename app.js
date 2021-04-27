@@ -19,25 +19,22 @@ const app = express();
 app.use(logger('dev'));
 
 var con = mysql.createConnection({
-    host: "localhost",
-    user: "yourusername",
-    password: "yourpassword"
+    host: "34.107.111.4",
+    user: "root",
+    password: "qß9m5c3453",
+    database: "mydb"
   });
   
   con.connect(function(err) {
     if (err) throw err;
     console.log("Connected!");
+    var sql = "SELECT * FROM customers";
+    con.query(sql, function (err, result) {
+        if (err) throw err;
+        console.log(result);
+      });
   });
 
-
-/** SETTING UP LOWDB */
-const adapter = new FileSync('data/db.json');
-const db = low(adapter);
-db.defaults({
-    records: [],
-    users: [],
-    orders: []
-}).write();
 
 
 /** REQUEST PARSERS */
