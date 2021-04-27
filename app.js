@@ -6,6 +6,7 @@ const logger = require('morgan');
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
 const { MongoClient } = require('mongodb')
+require('dotenv').config()
 
 /** ROUTERS */
 const indexRouter = require('./routes/index');
@@ -20,10 +21,15 @@ const app = express();
 /** LOGGING */
 app.use(logger('dev'));
 
+/** ENV VARIABLES **/
+const dBURL = process.env.DB_URL
+const dBPassword = process.env.DB_PASSWORD
+const dBUser = process.env.DB_USER
+
 
 /** CONNECT TO MONGODB **/
 async function connectDB() {//                                                    db name
-    const url = "mongodb+srv://dbUser:hakLtZiWGKYsKlDm@cluster0.ddzgb.mongodb.net/record-shop?retryWrites=true&w=majority"
+    const url = `mongodb+srv://${dBUser}:${dBPassword}@${dBURL}`
     const client = new MongoClient(url)
 
     try {
