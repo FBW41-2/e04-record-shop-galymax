@@ -88,6 +88,7 @@ describe('Users Endpoints', () => {
 })
 
 beforeAll(async (done) => {
+    mongoose.connect('mongodb+srv://localhost:27017/record-shop')
     server = app.listen(3000, () => {
         global.agent = request.agent(server);
         done();
