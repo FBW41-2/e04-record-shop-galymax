@@ -23,6 +23,14 @@
       "img": "I am a url",
       "price": 40,
       "id": "1568389444500"
+    },
+    {
+      "title": "Greatest Hits special edition",
+      "artist": "George Michael",
+      "year": 2002,
+      "img": "img/folder",
+      "price": 10,
+      "id": "1619602041820"
     }
   ],
   "users": [
@@ -31,6 +39,34 @@
       "email": "lolito@gmail.com",
       "pass": 2019,
       "id": "1568627672633"
+    },
+    {
+      "firstName": "Rebecca",
+      "lastName": "Fisher",
+      "email": "Verner89@gmail.com",
+      "password": "ztiaf12vr1DPDHy",
+      "id": "1619602020618"
+    },
+    {
+      "firstName": "Carmelo",
+      "lastName": "West",
+      "email": "wrong.mail.com",
+      "password": "6KhloJV_N1",
+      "id": "1619602048567"
+    },
+    {
+      "lastName": "Ward",
+      "email": "Monte17@gmail.com",
+      "password": "FJgmF6CIF0",
+      "id": "1619602048599"
+    },
+    {
+      "firstName": "Elza",
+      "lastName": "Schowalter",
+      "email": "Eugene.Kihn65@gmail.com",
+      "password": "098ab3452",
+      "id": "1619602048610"
     }
-  ]
+  ],
+  "orders": []
 }
