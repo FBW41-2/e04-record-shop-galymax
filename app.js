@@ -22,7 +22,7 @@ app.use(logger("dev"));
 /**CONNECT TO DB */
 mongoose.connect(
     process.env.NODE_ENV == 'test' ?
-        'mongodb+srv://localhost:27017/record-shop' :
+        'mongodb://localhost:27017/record-shop' :
         `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_URL}`,
     {
         useNewUrlParser: true,
