@@ -12,6 +12,6 @@
           - uses: actions/checkout@v2
           - uses: education/autograding@v1
             env:
-              DB_URL=localhost:27017/record-shop
-              DB_USER=root
-              DB_PASSWORD=none
+              DB_URL: localhost:27017/record-shop
+              DB_USER: root
+              DB_PASSWORD: none
