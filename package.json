@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
+    "seed_db": "node seeding/seed_db.js",
     "watch": "DEBUG=record-shop:* nodemon --inspect ./bin/www --ignore 'data/*'"
   },
   "dependencies": {
