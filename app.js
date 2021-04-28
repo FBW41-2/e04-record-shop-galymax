@@ -3,9 +3,9 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
-const { MongoClient } = require('mongodb')
+const getId = require('./middleware/getId')
+
+const mongoose = require('mongoose')
 require('dotenv').config()
 
 /** ROUTERS */
@@ -28,37 +28,12 @@ const dBUser = process.env.DB_USER
 
 
 /** CONNECT TO MONGODB **/
-async function connectDB() {//                                                    db name
-    const url = `mongodb+srv://${dBUser}:${dBPassword}@${dBURL}`
-    const client = new MongoClient(url)
-
-    try {
-        await client.connect()
-        // assign db to global object
-        app.locals.db = client.db()
-        await listDatabases(client)
-    } catch (error) {
-        console.error(error)
-    }
-}
-
-async function listDatabases(client) {
-    databasesList = await client.db().admin().listDatabases();
- 
-    console.log("Databases:");
-    databasesList.databases.forEach(db => console.log(` - ${db.name}`));
-}
-
-connectDB().catch(console.error)
-
-/** SETTING UP LOWDB */
-const adapter = new FileSync('data/db.json');
-const db = low(adapter);
-db.defaults({
-    records: [],
-    users: [],
-    orders: []
-}).write();
+mongoose.connect(`mongodb+srv://${dBUser}:${dBPassword}@${dBURL}`, {useNewUrlParser: true, useUnifiedTopology: true})
+const db = mongoose.connection
+db.on('error', console.error.bind(console, 'connection error:'))
+db.once('open', () => {
+    console.log("connected!")
+})
 
 
 /** REQUEST PARSERS */
@@ -66,6 +41,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(setCors);
+app.use(getId)
 
 /** STATIC FILES*/
 app.use(express.static(path.join(__dirname, 'public')));
