@@ -1,4 +1,7 @@
-const { MongoClient } = require('mongodb')
+var faker = require("faker");
+const mongoose = require("mongoose");
+const User = require("../models/User");
+const Record = require("../models/Record");
 require('dotenv').config()
 
 /** ENV VARIABLES **/
@@ -6,33 +9,67 @@ const dBURL = process.env.DB_URL
 const dBPassword = process.env.DB_PASSWORD
 const dBUser = process.env.DB_USER
 
-/** CONNECT TO MONGODB **/
-async function connectDB() {//                                                    db name
-    const url = `mongodb+srv://${dBUser}:${dBPassword}@${dBURL}`
-    const client = new MongoClient(url)
-
-    try {
-        await client.connect()
-        const db = client.db()
-        console.log("connected!")
-        // seed Database
-        // create records
-        const records = db.collection('records')
-        // clear records collection
-        records.deleteMany({})
-        // generate mock data
-        mockRecords = new Array(10).fill(null).map(() => {
-            
-        })
-        records.insertMany([
-            {artist: "Sting"}
-        ])
-        // create users
-        // create orders
-    } catch (error) {
-        console.error(error)
-    }
+console.log("I shall seed");
+(async function() {
+  /**CONNECT TO DB */
+  mongoose.connect(`mongodb+srv://${dBUser}:${dBPassword}@${dBURL}`, {useNewUrlParser: true, useUnifiedTopology: true}, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true
+  });
+  mongoose.connection.on("error", console.error);
+  mongoose.connection.on("open", function() {
+    console.log("Database connection established...");
+  });
+  console.log("I will purge all the old users...");
+  try {
+    await User.deleteMany({});
+    await
+    console.log("Users purged");
+  } catch (err) {
+    console.error(err);
+  }
+  const userPromises = Array(100)
+    .fill(null)
+    .map(() => {
+      const user = new User({
+        firstName: faker.name.firstName(),
+        lastName: faker.name.lastName(),
+        email: faker.internet.email(),
+        password: faker.internet.password(),
+        img: faker.image.image()
+      });
+      return user.save();
+    });
+  try {
+    await Promise.all(userPromises);
+    console.log("Users seeded");
+  } catch (e) {
+    console.error(e);
+  }
+  try {
+    await Record.deleteMany({});
+    console.log("Records purged");
+  } catch (err) {
+    console.error(err);
+  }
+  const recordPromises = Array(100)
+  .fill(null)
+  .map(() => {
+    const record = new Record({
+      title: faker.name.lastName(),
+      artist: faker.name.firstName(),
+      year: faker.datatype.number(),
+      img: faker.image.image(),
+      price:faker.commerce.price()
+    });
+    return record.save();
+  });
+try {
+  await Promise.all(recordPromises);
+  console.log("Record seeded");
+} catch (e) {
+  console.error(e);
 }
-
-
-connectDB().catch(console.error)
+  mongoose.connection.close();
+})();
