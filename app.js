@@ -18,6 +18,7 @@ const app = express();
 /** LOGGING */
 app.use(logger('dev'));
 
+/** DATABASE CONNECTION */
 var con = mysql.createConnection({
     host: "34.107.111.4",
     user: "root",
@@ -25,15 +26,15 @@ var con = mysql.createConnection({
     database: "mydb"
   });
   
-  con.connect(function(err) {
+con.connect(function(err) {
     if (err) throw err;
     console.log("Connected!");
     var sql = "SELECT * FROM customers";
     con.query(sql, function (err, result) {
         if (err) throw err;
         console.log(result);
-      });
-  });
+    });
+});
 
 
 
