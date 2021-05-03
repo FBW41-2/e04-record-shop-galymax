@@ -4,6 +4,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mysql = require('mysql')
+const sqlconfig = require('./config/sql')
 
 /** ROUTERS */
 const indexRouter = require('./routes/index');
@@ -12,28 +13,26 @@ const recordsRouter = require('./routes/records');
 const ordersRouter = require('./routes/orders');
 const { setCors } = require("./middleware/security");
 
+
 /** INIT */
 const app = express();
 
 /** LOGGING */
 app.use(logger('dev'));
 
+exports.sqlconfig = sqlconfig
+
 /** DATABASE CONNECTION */
-var con = mysql.createConnection({
-    host: "34.107.111.4",
-    user: "root",
-    password: "qß9m5c3453",
-    database: "mydb"
-  });
+var con = mysql.createConnection(sqlconfig);
   
 con.connect(function(err) {
     if (err) throw err;
     console.log("Connected!");
-    var sql = "SELECT * FROM customers";
+    /*var sql = "SELECT * FROM records";
     con.query(sql, function (err, result) {
         if (err) throw err;
         console.log(result);
-    });
+    });*/
 });
 
 

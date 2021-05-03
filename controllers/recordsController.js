@@ -1,53 +1,75 @@
 const mongodb = require('mongodb')
+const mysql = require('mysql')
+const sqlconfig = require('../config/sql')
 
 // get all records
 exports.getRecords = (req, res, next) => {
     // access db from global object   // select all records
-    req.app.locals.db.collection('records').find().toArray((err, docs) => {
-        res.json(docs)
-    })
+    const con = mysql.createConnection(sqlconfig);
+  
+    con.connect(function(err) {
+        if (err) throw err;
+        con.query('SELECT * FROM records', (err, result) => {
+          if(err) throw err
+          res.json(result)
+        })
+    });
 }
 
 // get specific record
 exports.getRecord = (req, res, next) => {
     const { id } = req.params;
-    req.app.locals.db.collection('records').findOne({_id: new mongodb.ObjectID(id)}, (err, result) => {
-        res.json(result)
-    })
+    const con = mysql.createConnection(sqlconfig);
+  
+    con.connect(function(err) {
+        if (err) throw err;
+        con.query(`SELECT * FROM records WHERE id = ${id}`, (err, result) => {
+          if(err) throw err
+          res.json(result)
+        })
+    });
 }
 
 // delete one record
 exports.deleteRecord = (req, res, next) => {
     const { id } = req.params;
-    req.app.locals.db.collection('records').deleteOne({_id: new mongodb.ObjectID(id)}, (err, result) => {
-        if(err) console.error(err)
-        console.log("del result", result)
-        res.json({deleted: result.deletedCount});
-    })
+    const con = mysql.createConnection(sqlconfig);
+  
+    con.connect(function(err) {
+        if (err) throw err;
+        con.query(`DELETE FROM records WHERE id = ${id}`, (err, result) => {
+          if(err) throw err
+          res.json(result)
+        })
+    });
 }
 
 // update one record
 exports.updateRecord = (req, res, next) => {
     const { id } = req.params;
-    req.app.locals.db.collection('records').updateOne(
-        // filter
-        {_id: new mongodb.ObjectID(id)}, 
-        // new data
-        {
-            $set: req.body
-        },
-        // callback function
-        (err, entry) => {
-            res.json(entry)
-        }
-    )
+    const { price } = req.body
+    const con = mysql.createConnection(sqlconfig);
+  
+    con.connect(function(err) {
+        if (err) throw err;
+        con.query(`UPDATE records SET price = '${price}' WHERE id = ${id}`, (err, result) => {
+          if(err) throw err
+          res.json(result)
+        })
+    });
 }
 
 // create new record
 exports.addRecord = (req, res, next) => {
-    const record = req.body;
+    const { artist, albumtitle, year, price} = req.body;
     // access db from global object
-    req.app.locals.db.collection('records').insertOne(record, (err, entry) => {
-        res.json(entry)
-    })
+    const con = mysql.createConnection(sqlconfig);
+  
+    con.connect(function(err) {
+        if (err) throw err;
+        con.query(`INSERT INTO records (artist, albumname, year, price) VALUES ('${artist}', '${albumtitle}', '${year}', '${price}')`, (err, result) => {
+          if(err) throw err
+          res.json(result)
+        })
+    });
 }
