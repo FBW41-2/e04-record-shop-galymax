@@ -13,6 +13,7 @@ describe.each(['/orders', '/users', '/records'])('Cors in %s', path => {
                 'access-control-allow-methods': expect.stringContaining('GET')
             })
         )
+        done()
     })
 
     test('Content type json in GET ' + path, async () => {
@@ -22,6 +23,7 @@ describe.each(['/orders', '/users', '/records'])('Cors in %s', path => {
                 'content-type': expect.stringContaining('application/json')
             })
         )
+        done()
     })
 })
 
