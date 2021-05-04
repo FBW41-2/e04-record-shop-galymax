@@ -1,5 +1,6 @@
 const app = require('../app')
 const request = require('supertest');
+const mongoose = require('mongoose')
 let server
 
 describe.each(['/orders', '/users', '/records'])('Cors in %s', path => {
