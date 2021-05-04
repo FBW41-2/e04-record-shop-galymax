@@ -1,46 +1,32 @@
-const low = require("lowdb");
-const FileSync = require("lowdb/adapters/FileSync");
-const adapter = new FileSync("data/db.json");
-const db = low(adapter);
+const Order = require('../models/Order')
 
-exports.getOrders = (req, res, next) => {
-  const orders = db.get("orders").value();
-  res.status(200).send(orders);
+exports.getOrders = async (req, res, next) => {
+  const orders = await Order.find();
+  res.json(orders);
 };
 
-exports.getOrder = (req, res, next) => {
+exports.getOrder = async (req, res, next) => {
   const { id } = req.params;
-  const order = db.get("orders").find({ id });
-  res.status(200).send(order);
+  const order = await Order.findById(id)
+  res.json(order);
+
 };
 
-exports.deleteOrder = (req, res, next) => {
+exports.deleteOrder = async (req, res, next) => {
   const { id } = req.params;
-  const order = db
-    .get("orders")
-    .remove({ id })
-    .write();
-  res.status(200).send(order);
+  const order = await Order.findByIdAndDelete(id)
+  res.json(order);
 };
 
-exports.updateOrder = (req, res, next) => {
+exports.updateOrder = async (req, res, next) => {
   const { id } = req.params;
   const dt = req.body;
-  const order = db
-    .get("orders")
-    .find({ id })
-    .assign(dt)
-    .write();
-  res.status(200).send(order);
+  const order = await Order.findByIdAndUpdate(id, dt, {new:true})
+  res.json(order);
 };
 
-exports.addOrder = (req, res, next) => {
-  const order = req.body;
-  db.get("orders")
-    .push(order)
-    .last()
-    .assign({ id: Date.now().toString() })
-    .write();
+exports.addOrder = async (req, res, next) => {
+  const order = await Order.create(req.body)
 
-  res.status(200).send(order);
+  res.json(order);
 };

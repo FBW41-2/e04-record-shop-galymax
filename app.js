@@ -20,10 +20,10 @@ const app = express();
 app.use(logger("dev"));
 
 /**CONNECT TO DB */
+const mongoURI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.NODE_ENV == 'test' ? process.env.DB_URL_TESTING : process.env.DB_URL_PRODUCTION}`
+console.log("mongo URI", mongoURI)
 mongoose.connect(
-    process.env.NODE_ENV == 'test' ?
-        'mongodb://localhost:27017/record-shop' :
-        `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_URL}`,
+        mongoURI,
     {
         useNewUrlParser: true,
         useCreateIndex: true,

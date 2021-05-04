@@ -1,8 +1,8 @@
 const User = require('../models/User')
 
-exports.getUsers = (req, res, next) => {
-  const users = db.get("users").value();
-  res.status(200).send(users);
+exports.getUsers = async (req, res, next) => {
+  const users = await User.find();
+  res.json(users);
 };
 
 exports.getUser = (req, res, next) => {
@@ -13,33 +13,22 @@ exports.getUser = (req, res, next) => {
   })
 };
 
-exports.deleteUser = (req, res, next) => {
+exports.deleteUser = async (req, res, next) => {
   const { id } = req.params;
-  const user = db
-    .get("users")
-    .remove({ id })
-    .write();
-  res.status(200).send(user);
+  const user = await User.findById(id)
+  res.json(user);
 };
 
-exports.updateUser = (req, res, next) => {
+exports.updateUser = async (req, res, next) => {
   const { id } = req.params;
   const dt = req.body;
-  const user = db
-    .get("users")
-    .find({ id })
-    .assign(dt)
-    .write();
-  res.status(200).send(user);
+  const user = await User.findByIdAndUpdate(id, dt,{new:true})
+  res.json(user);
 };
 
-exports.addUser = (req, res, next) => {
+exports.addUser = async (req, res, next) => {
   const user = req.body;
-  db.get("users")
-    .push(user)
-    .last()
-    .assign({ id: Date.now().toString() })
-    .write();
+  await User.create(user)
 
-  res.status(200).send(user);
+  res.json(user);
 };
