@@ -1,6 +1,6 @@
 const app = require('../app')
 const request = require('supertest');
-const { ExpectationFailed } = require('http-errors');
+let server
 
 describe.each(['/orders', '/users', '/records'])('Cors in %s', path => {
     test('Cors in GET ' + path, async (done) => {
