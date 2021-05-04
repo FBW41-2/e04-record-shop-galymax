@@ -3,7 +3,7 @@ const request = require('supertest');
 const { ExpectationFailed } = require('http-errors');
 
 describe.each(['/orders', '/users', '/records'])('Cors in %s', path => {
-    test('Cors in GET ' + path, async () => {
+    test('Cors in GET ' + path, async (done) => {
         const res = await request(app).get(path)
 
         expect(res.headers).toEqual(
@@ -16,7 +16,7 @@ describe.each(['/orders', '/users', '/records'])('Cors in %s', path => {
         done()
     })
 
-    test('Content type json in GET ' + path, async () => {
+    test('Content type json in GET ' + path, async (done) => {
         const res = await request(app).get(path)
         expect(res.headers).toEqual(
             expect.objectContaining({
