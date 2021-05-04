@@ -21,10 +21,9 @@ app.use(logger("dev"));
 
 /**CONNECT TO DB */
 const localDbURI = "mongodb://localhost:27017/record-shop"
-const mongoURI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.NODE_ENV == 'test' ? process.env.DB_URL_TESTING : process.env.DB_URL_PRODUCTION}`
-console.log("mongo URI", process.env.NODE_ENV == 'autograding' ? localDbURI: mongoURI)
+const atlasURI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.NODE_ENV == 'test' ? process.env.DB_URL_TESTING : process.env.DB_URL_PRODUCTION}`
 mongoose.connect(
-        mongoURI,
+        process.env.NODE_ENV == 'autograding' ? localDbURI : atlasURI,
     {
         useNewUrlParser: true,
         useCreateIndex: true,
