@@ -9,6 +9,7 @@ let server;
 
 describe('Records Endpoints', () => {
     test('should get list of all records', async done =>{
+        // make sure to have data in the DB
         await Record.create({
             title: 'Last Christmas',
             artist: 'George Michael',
@@ -16,9 +17,14 @@ describe('Records Endpoints', () => {
             img: 'img/folder',
             price: 5
           })
+        // make request to the application
         const res = await request(app).get('/records')
+        // tests
+        // is status code 200?
         expect(res.statusCode).toBe(200)
+        // is the response JSON an array?
         expect(Array.isArray(res.body)).toBeTruthy()
+        // is the array lenth greater than 0?
         expect(res.body.length).toBeGreaterThan(0)
         done()
     })
