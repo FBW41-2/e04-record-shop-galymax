@@ -1,8 +1,14 @@
 const Order = require('../models/Order')
+const createError = require('http-errors')
 
 exports.getOrders = async (req, res, next) => {
-  const orders = await Order.find();
-  res.json(orders);
+  try {
+    const orders = await Order.find();
+    if(!orders) throw new createError.NotFound()
+    res.json(orders)
+  } catch (error) {
+    next(error)
+  }
 };
 
 exports.getOrder = async (req, res, next) => {
