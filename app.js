@@ -4,6 +4,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const mongoose = require("mongoose");
+require('dotenv').config()
 
 /** ROUTERS */
 const indexRouter = require("./routes/index");
@@ -19,16 +20,26 @@ const app = express();
 app.use(logger("dev"));
 
 /**CONNECT TO DB */
-mongoose.connect("mongodb://localhost:27017/record-shop", {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useUnifiedTopology: true
+const dbUser = process.env.DB_USER
+const dbPassword = process.env.DB_PASSWORD
+const dbURL = process.env.DB_URL
+
+const localDbURI = "mongodb://localhost:27017/record-shop"
+const atlasURI = `mongodb+srv://${dbUser}:${dbPassword}@${dbURL}`
+mongoose.connect(
+        dbURL ? atlasURI : localDbURI,
+    {
+        useNewUrlParser: true,
+        useCreateIndex: true,
+        useUnifiedTopology: true
 });
 
 mongoose.connection.on("error", console.error);
 mongoose.connection.on("open", function() {
   console.log("Database connection established...");
 });
+
+
 
 /** REQUEST PARSERS */
 app.use(express.json());
