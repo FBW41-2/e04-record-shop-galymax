@@ -1,17 +1,18 @@
-const { validationResult } = require("express-validator")
+// incl. in express-validator
+const { validationResult } = require("express-validator");
+const checkValidation = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  } else {
+    next();
+  }
+};
+const generateValidator = (validators) => {
+  return [...validators, checkValidation];
+};
+module.exports = generateValidator;
 
-const chekValidator = (req, res, next) => {
-    const errors = validationResult(req)
-    if(!errors.isEmpty()){
-        return res.status(400).json({errors: errors.array()})
-    }
-    else{
-        next()
-    }
-}
 
-const generatorValidator = (validator) =>{
-    return [...validator, chekValidator]
-}
 
-module.exports = generatorValidator 
+
