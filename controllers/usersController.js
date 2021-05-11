@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const createError = require("http-errors");
+const {userValidators} = require('express-validator')
 
 exports.getUsers = async (req, res, next) => {
   try {
@@ -43,11 +44,13 @@ exports.updateUser = async (req, res, next) => {
 };
 
 exports.addUser = async (req, res, next) => {
-  try {
-    const user = new User(req.body);
-    await user.save();
-    res.status(200).send(user);
-  } catch (e) {
-    next(e);
+  const error = User(req)
+  if(!error.isEmpty())
+  return res.status(400).json({error: error.array()})
+    try{
+      const user = new User(req.body)
+      await user.save()
+    } catch(error) {
+    next(error)
   }
 };
