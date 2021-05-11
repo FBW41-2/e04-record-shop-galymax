@@ -6,6 +6,8 @@ const logger = require("morgan");
 const mongoose = require("mongoose");
 //const faker = require("faker")
 require("dotenv").config();
+//const { userValidators } = require("express-validator")
+//var validator = require('validator');
  
 /** ROUTERS */
 const indexRouter = require("./routes/index");
@@ -16,9 +18,11 @@ const { setCors } = require("./middleware/security");
  
 /** INIT */
 const app = express();
+//app.use(userValidators)
  
 /** LOGGING */
 app.use(logger("dev"));
+//app.use(validator());
 
 /**CONNECT TO DB */
 /**CONNECT TO DB */
