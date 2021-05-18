@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const Address = require("./Address");
+const bcrypt = require("bcrypt")
 
 const UserSchema = new Schema(
   {
@@ -20,7 +21,14 @@ const UserSchema = new Schema(
       type: String,
       required: true
     },
-    address: Address
+    address: {
+      city: {
+        type: String,
+        required: true
+      },
+      street: String
+    },
+    token: String
   },
   {
     toObject: {
@@ -31,6 +39,19 @@ const UserSchema = new Schema(
     }
   }
 );
+
+UserSchema.pre('save', async function(next){
+  console.log(this)
+  this.password = await bcrypt.hash(this.password, 10)
+  next()
+})
+
+UserSchema.pre('findOneAndUpdate', async function(next){
+  console.log(this)
+  if(this._update.password)
+    this._update.password = await bcrypt.hash(this._update.password, 10)
+  next()
+})
 
 UserSchema.virtual("fullName").get(function() {
   return `${this.firstName} ${this.lastName}`;

@@ -1,6 +1,10 @@
 const User = require("../models/User");
 const createError = require("http-errors");
 const { validationResult } = require("express-validator");
+const bcrypt = require("bcrypt")
+const crypto = require("crypto")
+
+const tokens = {}
 
 exports.getUsers = async (req, res, next) => {
   try {
@@ -35,8 +39,17 @@ exports.deleteUser = async (req, res, next) => {
 };
 
 exports.updateUser = async (req, res, next) => {
+  const token = req.headers['x-auth']
+  const userData = req.body
+  // is the request coming from a logged in user?
+  // Find the user with provided key
+  const loggedInUser = await User.findOne({token: token})
+  console.log("token", token)
+  if(!token || !loggedInUser) {
+    return next({message: "Permission denied. You have to log in"})
+  }
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+    const user = await User.findByIdAndUpdate(req.params.id, userData, {
       new: true,
       runValidators: true
     });
@@ -55,9 +68,45 @@ exports.addUser = async (req, res, next) => {
     }
 
     const user = new User(req.body);
+    const token = crypto.randomBytes(30).toString('hex')
+    user.password = await bcrypt.hash(user.password, 10)
+    user.token = token
     await user.save();
-    res.status(200).send(user);
+    res
+      .set({
+        'x-auth': token
+      })
+      .json(user);
   } catch (e) {
     next(e);
   }
 };
+
+exports.login = async (req, res, next) => {
+  const userCredentials = req.body
+  let user
+  let isCorrectPassword
+  console.log(userCredentials)
+  try {
+    user = await User.findOne({email: userCredentials.email}).select("+password")
+    console.log("DB User Pssword", user.password, userCredentials.password)
+    const password = user.password
+    isCorrectPassword = await bcrypt.compare(userCredentials.password, password)
+  } catch (error) {
+    next(error)
+  }
+  
+  if(isCorrectPassword) {
+    // generate random string
+    const token = crypto.randomBytes(30).toString('hex')
+    // store key in user DB entry
+    await User.findByIdAndUpdate(user.id, {token: token})
+    res
+      .set({
+        'x-auth': token
+      })
+      .json({message: "Congrats! You are logged in!"})
+  } else {
+    next({message: "Wrong password"})
+  }
+}
