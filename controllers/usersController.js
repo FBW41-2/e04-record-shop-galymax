@@ -1,10 +1,7 @@
 const User = require("../models/User");
 const createError = require("http-errors");
-const { validationResult } = require("express-validator");
-const bcrypt = require("bcrypt")
-const crypto = require("crypto")
-
-const tokens = {}
+const { body, validationResult } = require("express-validator");
+const jwt = require('jsonwebtoken')
 
 exports.getUsers = async (req, res, next) => {
   try {
@@ -39,17 +36,8 @@ exports.deleteUser = async (req, res, next) => {
 };
 
 exports.updateUser = async (req, res, next) => {
-  const token = req.headers['x-auth']
-  const userData = req.body
-  // is the request coming from a logged in user?
-  // Find the user with provided key
-  const loggedInUser = await User.findOne({token: token})
-  console.log("token", token)
-  if(!token || !loggedInUser) {
-    return next({message: "Permission denied. You have to log in"})
-  }
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, userData, {
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true
     });
@@ -68,45 +56,39 @@ exports.addUser = async (req, res, next) => {
     }
 
     const user = new User(req.body);
-    const token = crypto.randomBytes(30).toString('hex')
-    user.password = await bcrypt.hash(user.password, 10)
-    user.token = token
+    const token = user.generateAuthToken();
     await user.save();
+    const data = user.getPublicFields();
+
     res
-      .set({
-        'x-auth': token
-      })
-      .json(user);
+      .status(200)
+      .header("x-auth", token)
+      .send(data);
   } catch (e) {
     next(e);
   }
 };
 
-exports.login = async (req, res, next) => {
-  const userCredentials = req.body
-  let user
-  let isCorrectPassword
-  console.log(userCredentials)
+exports.loginUser = async (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+
   try {
-    user = await User.findOne({email: userCredentials.email}).select("+password")
-    console.log("DB User Pssword", user.password, userCredentials.password)
-    const password = user.password
-    isCorrectPassword = await bcrypt.compare(userCredentials.password, password)
-  } catch (error) {
-    next(error)
-  }
-  
-  if(isCorrectPassword) {
-    // generate random string
-    const token = crypto.randomBytes(30).toString('hex')
-    // store key in user DB entry
-    await User.findByIdAndUpdate(user.id, {token: token})
+    const allUsers = await User.find()
+    const user = await User.findOne({ email });
+    if (!user) throw new createError.NotFound("User not found")
+    const valid = await user.checkPassword(password);
+    if (!valid) throw new createError(401, "Password incorrect")
+
+    
+    const data = user.getPublicFields();
+    const token = user.generateAuthToken()
+
     res
-      .set({
-        'x-auth': token
-      })
-      .json({message: "Congrats! You are logged in!"})
-  } else {
-    next({message: "Wrong password"})
+      .status(200)
+      .header("x-auth", token)
+      .send(data);
+  } catch (e) {
+    next(e);
   }
-}
+};

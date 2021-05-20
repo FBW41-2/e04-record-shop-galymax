@@ -4,7 +4,7 @@ const createError = require("http-errors");
 exports.getOrders = async (req, res, next) => {
   try {
     const orders = await Order.find().populate("records", "-__v -price -year");
-    res.status(200).send(orders);
+    res.json(orders);
   } catch (e) {
     next(e);
   }
@@ -17,7 +17,7 @@ exports.getOrder = async (req, res, next) => {
       "-__v -price -year"
     );
     if (!order) throw new createError.NotFound();
-    res.status(200).send(order);
+    res.json(order);
   } catch (e) {
     next(e);
   }
@@ -49,7 +49,7 @@ exports.addOrder = async (req, res, next) => {
   try {
     const order = new Order(req.body);
     await order.save();
-    res.status(200).send(order);
+    res.json(order);
   } catch (e) {
     next(e);
   }
