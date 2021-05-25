@@ -13,7 +13,7 @@ const {
 
 router
   .route("/")
-  .get(auth, isAdmin, getOrders)
+  .get(auth, getOrders)
   .post(auth, addOrder);
 
 router

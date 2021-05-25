@@ -13,12 +13,12 @@ const {
 
 router
   .route("/")
-  .get(auth, getRecords)
+  .get(getRecords)
   .post(auth, isAdmin, addRecord);
 
 router
   .route("/:id")
-  .get(auth, isAdmin, getRecord)
+  .get(getRecord)
   .delete(auth, isAdmin, deleteRecord)
   .put(auth, isAdmin, updateRecord);
 
