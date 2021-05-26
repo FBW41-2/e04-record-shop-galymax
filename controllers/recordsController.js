@@ -32,6 +32,7 @@ exports.deleteRecord = async (req, res, next) => {
 
 exports.updateRecord = async (req, res, next) => {
   try {
+    if(req.file) req.body.img = req.file.path.replace("public/", "")
     const record = await Record.findByIdAndUpdate(req.params.id, req.body, {
       new: true
     });

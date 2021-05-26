@@ -42,7 +42,9 @@ mongoose.connection.on("open", function() {
 
 
 /** REQUEST PARSERS */
+// JSON parser
 app.use(express.json());
+// URL encoded parser
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(setCors);

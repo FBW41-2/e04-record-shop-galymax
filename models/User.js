@@ -78,6 +78,7 @@ UserSchema.methods.getPublicFields = function() {
     firstName: this.firstName,
     lastName: this.lastName,
     email: this.email,
+    role: this.role,
     _id: this._id
   };
 
